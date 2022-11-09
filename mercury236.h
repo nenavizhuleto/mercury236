@@ -11,7 +11,7 @@
 #define BAUDRATE B57600
 #define TIME_OUT 2 * 1000 // Mercury inter-command delay (ms)
 #define CH_TIME_OUT 1	  // Channel timeout (sec)
-#define PM_ADDRESS 0	  // RS485 addess of the power meter
+#define PM_ADDRESS 0x43	  // RS485 addess of the power meter
 
 #define UInt16 uint16_t
 #define byte unsigned char
@@ -20,7 +20,7 @@
 #define MERCURY_SEMAPHORE "MERCURY_RS485"
 #define MERCURY_ACCESS_PERM 0666
 
-#define debugPrint 1
+#define debugPrint 0
 
 // ***** Commands
 // Test connection
@@ -145,7 +145,6 @@ typedef enum
 typedef struct
 {
 	P3V U;				 // voltage
-	P3V LastAvgU;		 // last average voltage
 	P3V I;				 // current
 	P3V A;				 // phase angles
 	P3VS C;				 // cos(f)
@@ -189,7 +188,6 @@ int initConnection(int);
 int closeConnection(int);
 int getU(int, P3V *);
 int getI(int, P3V *);
-int getLastAvgU(int, P3V *);
 int getCosF(int, P3VS *);
 int getF(int, float *);
 int getA(int, P3V *);

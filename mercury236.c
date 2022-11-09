@@ -211,6 +211,7 @@ int checkChannel(int sock)
 	byte buf[BSZ];
 	int len = sendReceive(sock, (byte *)&testCmd, sizeof(testCmd), buf, BSZ);
 	if (len)
+		printf("Connection established\n\r");
 		return checkResult_1b(buf, len);
 
 	return CHECK_CHANNEL_FAILURE;
@@ -229,8 +230,8 @@ int initConnection(int sock)
 	InitCmd initCmd = {
 		.address = PM_ADDRESS,
 		.command = 0x01,
-		.accessLevel = 0x01,
-		.password = {0x01, 0x01, 0x01, 0x01, 0x01, 0x01},
+		.accessLevel = 0x02,
+		.password = {0x02, 0x02, 0x02, 0x02, 0x02, 0x02},
 	};
 	initCmd.CRC = ModRTU_CRC((byte *)&initCmd, sizeof(initCmd) - sizeof(UInt16));
 
@@ -347,37 +348,6 @@ int getI(int sock, P3V *I)
 			I->p1 = B3F(res->p1, 1000.0);
 			I->p2 = B3F(res->p2, 1000.0);
 			I->p3 = B3F(res->p3, 1000.0);
-		}
-
-		return checkResult;
-	}
-
-	return COMMUNICATION_ERROR;
-}
-
-int getLastAvgU(int sock, P3V *LastAvgU)
-{
-	ReadParamCmd getICmd =
-		{
-			.address = PM_ADDRESS,
-			.command = 0x08,
-			.paramId = 0x13,
-			.BWRI = 0x21};
-	getICmd.CRC = ModRTU_CRC((byte *)&getICmd, sizeof(getICmd) - sizeof(UInt16));
-
-	byte buf[BSZ];
-	int len = sendReceive(sock, (byte *)&getICmd, sizeof(getICmd), buf, BSZ);
-
-	if (len)
-	{
-		// Check and decode result
-		int checkResult = checkResult_3x3b(buf, len);
-		if (OK == checkResult)
-		{
-			Result_3x3b *res = (Result_3x3b *)buf;
-			LastAvgU->p1 = B3F(res->p1, 1000.0);
-			LastAvgU->p2 = B3F(res->p2, 1000.0);
-			LastAvgU->p3 = B3F(res->p3, 1000.0);
 		}
 
 		return checkResult;
